@@ -1,0 +1,72 @@
+#
+#  Command line:         ./demo 
+#                --or--  ./demo dual 
+#
+
+#
+# Compute the addresses of the AXI registers
+#
+BASE=0x1000
+SINGLE=$(( BASE + 0x00 ))
+ RIGHT=$(( BASE + 0x04 ))
+  LEFT=$(( BASE + 0x08 ))
+FORMAT=$(( BASE + 0x0C ))
+
+
+#
+#  If the user wants to run in dual-display mode, count up in both
+#  decimal and hex
+#
+if [ "$1" == "dual" ]; then
+
+    echo "Counting up in dual displays.  Left is in hex, right is in decimal"    
+    echo "Ctrl-C to exit"
+
+    # Left display in hex, right display in decimal
+    axireg $FORMAT 1
+    
+    while [ 1 -eq 1 ]; do
+        for i in {1..9999}; do
+            
+            # Write $i to both the right and left displays
+            axireg $RIGHT $i
+            axireg $LEFT  $i
+            
+            # On every multiple of 100, pause a moment
+            test $(( i % 100)) -eq 0 && sleep 3
+
+        done    
+    done
+fi
+
+#
+#  If the user wants to run in single display mode, count up in 
+#  decimal
+#
+if [ "$1" == "" ]; then
+
+    echo "Counting up on a single display "
+    echo "Ctrl-C to exit"
+
+    # Display is in decimal.  Change to 0 for Hex
+    axireg $FORMAT 1
+    value=0
+    
+    while [ 1 -eq 1 ]; do
+
+        # We're going to treat all 8 7-segs as a single display
+        axireg $SINGLE $value
+
+        # This counts up from 0 to 99999999
+        if [ $value -eq 99999999 ]; then
+            value=0;
+        else
+            value=$((value + 1))
+        fi
+
+    done
+
+fi
+
+# If we get here, the user flubbed the command line
+echo "Run either \"./demo\" or \"./demo dual\""
