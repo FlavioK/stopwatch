@@ -138,29 +138,29 @@
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
-        <CompFileExtendedInfo CompFileName="top_level.bd" FileRelPathName="ip/top_level_clk_wiz_0_0/top_level_clk_wiz_0_0.xci">
-          <Proxy FileSetName="top_level_clk_wiz_0_0"/>
-        </CompFileExtendedInfo>
-        <CompFileExtendedInfo CompFileName="top_level.bd" FileRelPathName="ip/top_level_proc_sys_reset_0_0/top_level_proc_sys_reset_0_0.xci">
-          <Proxy FileSetName="top_level_proc_sys_reset_0_0"/>
-        </CompFileExtendedInfo>
-        <CompFileExtendedInfo CompFileName="top_level.bd" FileRelPathName="ip/top_level_smartconnect_0_0/top_level_smartconnect_0_0.xci">
-          <Proxy FileSetName="top_level_smartconnect_0_0"/>
-        </CompFileExtendedInfo>
-        <CompFileExtendedInfo CompFileName="top_level.bd" FileRelPathName="ip/top_level_axi_uart_bridge_0_0/top_level_axi_uart_bridge_0_0.xci">
-          <Proxy FileSetName="top_level_axi_uart_bridge_0_0"/>
-        </CompFileExtendedInfo>
-        <CompFileExtendedInfo CompFileName="top_level.bd" FileRelPathName="ip/top_level_axi_uartlite_0_0/top_level_axi_uartlite_0_0.xci">
-          <Proxy FileSetName="top_level_axi_uartlite_0_0"/>
-        </CompFileExtendedInfo>
-        <CompFileExtendedInfo CompFileName="top_level.bd" FileRelPathName="ip/top_level_sevenseg_fe_0_0/top_level_sevenseg_fe_0_0.xci">
-          <Proxy FileSetName="top_level_sevenseg_fe_0_0"/>
+        <CompFileExtendedInfo CompFileName="top_level.bd" FileRelPathName="ip/top_level_sevenseg_driver_0_0/top_level_sevenseg_driver_0_0.xci">
+          <Proxy FileSetName="top_level_sevenseg_driver_0_0"/>
         </CompFileExtendedInfo>
         <CompFileExtendedInfo CompFileName="top_level.bd" FileRelPathName="ip/top_level_sevenseg_axi_fe_0_0/top_level_sevenseg_axi_fe_0_0.xci">
           <Proxy FileSetName="top_level_sevenseg_axi_fe_0_0"/>
         </CompFileExtendedInfo>
-        <CompFileExtendedInfo CompFileName="top_level.bd" FileRelPathName="ip/top_level_sevenseg_driver_0_0/top_level_sevenseg_driver_0_0.xci">
-          <Proxy FileSetName="top_level_sevenseg_driver_0_0"/>
+        <CompFileExtendedInfo CompFileName="top_level.bd" FileRelPathName="ip/top_level_sevenseg_fe_0_0/top_level_sevenseg_fe_0_0.xci">
+          <Proxy FileSetName="top_level_sevenseg_fe_0_0"/>
+        </CompFileExtendedInfo>
+        <CompFileExtendedInfo CompFileName="top_level.bd" FileRelPathName="ip/top_level_axi_uartlite_0_0/top_level_axi_uartlite_0_0.xci">
+          <Proxy FileSetName="top_level_axi_uartlite_0_0"/>
+        </CompFileExtendedInfo>
+        <CompFileExtendedInfo CompFileName="top_level.bd" FileRelPathName="ip/top_level_axi_uart_bridge_0_0/top_level_axi_uart_bridge_0_0.xci">
+          <Proxy FileSetName="top_level_axi_uart_bridge_0_0"/>
+        </CompFileExtendedInfo>
+        <CompFileExtendedInfo CompFileName="top_level.bd" FileRelPathName="ip/top_level_smartconnect_0_0/top_level_smartconnect_0_0.xci">
+          <Proxy FileSetName="top_level_smartconnect_0_0"/>
+        </CompFileExtendedInfo>
+        <CompFileExtendedInfo CompFileName="top_level.bd" FileRelPathName="ip/top_level_proc_sys_reset_0_0/top_level_proc_sys_reset_0_0.xci">
+          <Proxy FileSetName="top_level_proc_sys_reset_0_0"/>
+        </CompFileExtendedInfo>
+        <CompFileExtendedInfo CompFileName="top_level.bd" FileRelPathName="ip/top_level_clk_wiz_0_0/top_level_clk_wiz_0_0.xci">
+          <Proxy FileSetName="top_level_clk_wiz_0_0"/>
         </CompFileExtendedInfo>
       </File>
       <File Path="$PGENDIR/sources_1/bd/top_level/hdl/top_level_wrapper.v">

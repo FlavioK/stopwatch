@@ -50,11 +50,14 @@ if [ "$1" == "" ]; then
 
     # Display is in decimal.  Change to 0 for Hex
     axireg $FORMAT 1
+
+    # We'll be counting up and displaying it on the 7-seg
     value=0
     
+    # Loop forever...
     while [ 1 -eq 1 ]; do
 
-        # We're going to treat all 8 7-segs as a single display
+        # Send our value out to the unified 7-seg display
         axireg $SINGLE $value
 
         # This counts up from 0 to 99999999
