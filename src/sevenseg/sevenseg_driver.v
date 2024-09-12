@@ -16,6 +16,9 @@ module sevenseg_driver # (parameter CLOCK_FREQ = 100000000)
     
     // Digit enable
     input[7:0] digit_enable, 
+
+    // Enable the decimal point
+    input[7:0] dp_enable,
     
     // Active-low cathode and anode for the 7-seg digits
     output[7:0] ANODE,
@@ -77,6 +80,7 @@ assign ANODE = ~anode;
 //
 // Inputs: anode        = Bitmap of which anode (i.e., 7-seg display) is active
 //         digit_enable = Bitmap of which digits should be output
+//         dp_enable    = Bitmap of which decimal point should be output
 //         shifter      = bottom 4 bits map to the digit to be displayed
 //
 // Output: CATHODE = Driven to display the selected digit
@@ -85,22 +89,23 @@ always @* begin
     if ((digit_enable & anode) == 0)
         CATHODE = ~(8'b0000_0000);
     else case (shifter[3:0])
-        4'h0  : CATHODE = ~(8'b0011_1111);
-        4'h1  : CATHODE = ~(8'b0000_0110);
-        4'h2  : CATHODE = ~(8'b0101_1011);
-        4'h3  : CATHODE = ~(8'b0100_1111);
-        4'h4  : CATHODE = ~(8'b0110_0110);
-        4'h5  : CATHODE = ~(8'b0110_1101);
-        4'h6  : CATHODE = ~(8'b0111_1101);
-        4'h7  : CATHODE = ~(8'b0000_0111);
-        4'h8  : CATHODE = ~(8'b0111_1111);
-        4'h9  : CATHODE = ~(8'b0110_0111);
-        4'hA  : CATHODE = ~(8'b0111_0111);
-        4'hB  : CATHODE = ~(8'b0111_1100);
-        4'hC  : CATHODE = ~(8'b0011_1001);
-        4'hD  : CATHODE = ~(8'b0101_1110);
-        4'hE  : CATHODE = ~(8'b0111_1001);
-        4'hF  : CATHODE = ~(8'b0111_0001);
+        // Set the MSB to 1 in case we have the decimal point enabled for this anode.
+        4'h0  : CATHODE = ~({(dp_enable & anode) != 0, 7'b011_1111});
+        4'h1  : CATHODE = ~({(dp_enable & anode) != 0, 7'b000_0110});
+        4'h2  : CATHODE = ~({(dp_enable & anode) != 0, 7'b101_1011});
+        4'h3  : CATHODE = ~({(dp_enable & anode) != 0, 7'b100_1111});
+        4'h4  : CATHODE = ~({(dp_enable & anode) != 0, 7'b110_0110});
+        4'h5  : CATHODE = ~({(dp_enable & anode) != 0, 7'b110_1101});
+        4'h6  : CATHODE = ~({(dp_enable & anode) != 0, 7'b111_1101});
+        4'h7  : CATHODE = ~({(dp_enable & anode) != 0, 7'b000_0111});
+        4'h8  : CATHODE = ~({(dp_enable & anode) != 0, 7'b111_1111});
+        4'h9  : CATHODE = ~({(dp_enable & anode) != 0, 7'b110_0111});
+        4'hA  : CATHODE = ~({(dp_enable & anode) != 0, 7'b111_0111});
+        4'hB  : CATHODE = ~({(dp_enable & anode) != 0, 7'b111_1100});
+        4'hC  : CATHODE = ~({(dp_enable & anode) != 0, 7'b011_1001});
+        4'hD  : CATHODE = ~({(dp_enable & anode) != 0, 7'b101_1110});
+        4'hE  : CATHODE = ~({(dp_enable & anode) != 0, 7'b111_1001});
+        4'hF  : CATHODE = ~({(dp_enable & anode) != 0, 7'b111_0001});
     endcase
 end
 //=============================================================================
