@@ -45,11 +45,15 @@ module stopwatch #(
   localparam STOPWATCH_PAUSED = 0;
   localparam STOPWATCH_RUNNING = 1;
   reg stopwatch_running;
+  reg clear_display;
 
   //==========================================================================
   // This block handles the start/pause button
   //==========================================================================
   always @(posedge clk) begin
+
+    // Clear display is only 1 for one clock cycle.
+    clear_display <= 0;
 
     // Go to reset state -> dance off!
     if (resetn == 0) begin
@@ -58,6 +62,10 @@ module stopwatch #(
     end else if (start) begin
       // If the button gets pressed, start or pause the stopwatch.
       stopwatch_running <= ~stopwatch_running;
+    
+    // Only allow display clearing in paused state!
+    end else if ((stopwatch_running == STOPWATCH_PAUSED) && clear) begin
+      clear_display <= 1;
     end
   end
 
@@ -149,7 +157,7 @@ module stopwatch #(
 
         cf[i+1] <= 0;
 
-        if (resetn == 0) begin
+        if (resetn == 0 || clear_display) begin
           digits[i] <= 0;
           cf[i+1]   <= 0;
         end
@@ -174,9 +182,7 @@ module stopwatch #(
   // digit_enable = bitmap of which digits in single_out are significant
   //==========================================================================
   always @* begin
-    if (time_display[31:04] == 0) digit_enable = 8'b00000001;
-    else if (time_display[31:08] == 0) digit_enable = 8'b00000011;
-    else if (time_display[31:12] == 0) digit_enable = 8'b00000111;
+    if (time_display[31:12] == 0) digit_enable = 8'b00000111;
     else if (time_display[31:16] == 0) digit_enable = 8'b00001111;
     else if (time_display[31:20] == 0) digit_enable = 8'b00011111;
     else if (time_display[31:24] == 0) digit_enable = 8'b00111111;
