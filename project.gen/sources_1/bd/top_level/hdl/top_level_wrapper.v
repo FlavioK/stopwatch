@@ -1,7 +1,7 @@
 //Copyright 1986-2021 Xilinx, Inc. All Rights Reserved.
 //--------------------------------------------------------------------------------
 //Tool Version: Vivado v.2021.1 (lin64) Build 3247384 Thu Jun 10 19:36:07 MDT 2021
-//Date        : Fri Sep 13 00:12:55 2024
+//Date        : Mon Sep 16 10:24:04 2024
 //Host        : rrouwprlc0283 running 64-bit Ubuntu 22.04.4 LTS
 //Command     : generate_target top_level_wrapper.bd
 //Design      : top_level_wrapper
@@ -11,6 +11,7 @@
 
 module top_level_wrapper
    (AN,
+    BTND,
     BTNU,
     CLK100MHZ,
     CPU_RESETN,
@@ -18,6 +19,7 @@ module top_level_wrapper
     UART_rxd,
     UART_txd);
   output [7:0]AN;
+  input BTND;
   input BTNU;
   input CLK100MHZ;
   input CPU_RESETN;
@@ -26,6 +28,7 @@ module top_level_wrapper
   output UART_txd;
 
   wire [7:0]AN;
+  wire BTND;
   wire BTNU;
   wire CLK100MHZ;
   wire CPU_RESETN;
@@ -35,6 +38,7 @@ module top_level_wrapper
 
   top_level top_level_i
        (.AN(AN),
+        .BTND(BTND),
         .BTNU(BTNU),
         .CLK100MHZ(CLK100MHZ),
         .CPU_RESETN(CPU_RESETN),
