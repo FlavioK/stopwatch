@@ -133,7 +133,6 @@ module stopwatch #(
   //==========================================================================
   always @(posedge clk) begin
 
-
     if ((stopwatch_mode == STOPWATCH_RUNNING) && reg_delay) reg_delay <= reg_delay - 1;
 
     cf[0] <= 0;
