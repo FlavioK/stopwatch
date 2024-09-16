@@ -115,6 +115,8 @@ module stopwatch_axi #(
   //==========================================================================
   always @(posedge clk) begin
 
+    // Apply test value is only 1 for once clock cycle.
+    apply_test_value <= 0;
     // If we're in reset, initialize important registers
     if (resetn == 0) begin
       ashi_write_state <= 0;

@@ -38,35 +38,56 @@ module stopwatch #(
 
 );
 
-  // Always enable the digit point for the enabled digits. Just because we can.
-  assign dp_enable = digit_enable;
-
   // Inidcates if the stop watch is running.
   localparam STOPWATCH_PAUSED = 0;
   localparam STOPWATCH_RUNNING = 1;
-  reg stopwatch_running;
+  localparam STOPWATCH_TEST = 2;
+  reg [3:0] stopwatch_mode;
   reg clear_display;
+  reg trigger_test;
 
   //==========================================================================
-  // This block handles the start/pause button
+  // This state machine handles the stopwatch mode (running, paused, clear and test)
   //==========================================================================
   always @(posedge clk) begin
 
     // Clear display is only 1 for one clock cycle.
     clear_display <= 0;
+    // trigger_test is only 1 for one clock cycle.
+    trigger_test  <= 0;
 
     // Go to reset state -> dance off!
     if (resetn == 0) begin
-      stopwatch_running <= STOPWATCH_PAUSED;
+      stopwatch_mode <= STOPWATCH_PAUSED;
 
-    end else if (start) begin
-      // If the button gets pressed, start or pause the stopwatch.
-      stopwatch_running <= ~stopwatch_running;
-    
-    // Only allow display clearing in paused state!
-    end else if ((stopwatch_running == STOPWATCH_PAUSED) && clear) begin
-      clear_display <= 1;
-    end
+      // Stop the stop watch regardles of the state and clear the display so we are ready to apply the test value!
+    end else if (apply_test_value) begin
+      trigger_test   <= 1;
+      stopwatch_mode <= STOPWATCH_TEST;
+
+    end else
+      case (stopwatch_mode)
+        STOPWATCH_PAUSED: begin
+          // Start the stopwatch if requested
+          if (start) begin
+            stopwatch_mode <= STOPWATCH_RUNNING;
+
+            // Only allow display clearing in paused state!
+          end else if (clear) begin
+            clear_display <= 1;
+          end
+        end
+
+        // Pause the stopwatch if requested
+        STOPWATCH_RUNNING: if (start) stopwatch_mode <= STOPWATCH_PAUSED;
+
+        // If we are in test mode and get a clear or start signal, clear the display and go to paused mode.
+        STOPWATCH_TEST:
+        if (clear || start) begin
+          clear_display  <= 1;
+          stopwatch_mode <= STOPWATCH_PAUSED;
+        end
+      endcase
   end
 
   //==========================================================================
@@ -102,45 +123,45 @@ module stopwatch #(
   always @(posedge clk) begin
 
 
-    if ((stopwatch_running == STOPWATCH_RUNNING) && reg_delay) reg_delay <= reg_delay - 1;
+    if ((stopwatch_mode == STOPWATCH_RUNNING) && reg_delay) reg_delay <= reg_delay - 1;
 
     cf[0] <= 0;
 
-    // Go to reset state in case we get a reset signal or if we read the button and are in on state (LEDs dance is running).
-    if (resetn == 0) begin
+    // Go to reset state in case we get a reset or clear_display signal or if we read
+    // the button and are in on state (LEDs dance is running).
+    if (resetn == 0 || clear_display) begin
       stopwatch_fsm_state <= 0;
       reg_delay           <= 0;
       cf[0]               <= 0;
+
+      // We are in testing mode. Just increment the number of ticks.
+      // We could also just set the diplay with the received value. But I wanted to really
+      // test the counting mechanism with this test value. Therefore we just send test_value
+      // number of ticks to the counting state machine.
+    end else if (trigger_test) begin
+      test_ticks <= test_value;
+      stopwatch_fsm_state <= 2;
+
     end else
       case (stopwatch_fsm_state)
-        // Some initial state to decide which FSM mode we want to enter (counting or test).
-        0: begin
-          if (stopwatch_running == STOPWATCH_RUNNING) begin
-            stopwatch_fsm_state <= stopwatch_fsm_state + 1;
-          end else if (apply_test_value) begin
-            test_ticks <= test_value;
-            stopwatch_fsm_state <= 3;
-          end
-        end
-
         // Counting mode: We can only leave state 1 and 2 with a reset!   
-        1: begin
+        0: begin
           reg_delay <= CLOCK_CYCLES_PER_10MS;
           stopwatch_fsm_state <= stopwatch_fsm_state + 1;
         end
         // If the timer has expired, update the pattern       
-        2:
+        1:
         if (reg_delay == 0) begin
           cf[0] <= 1;
-          stopwatch_fsm_state <= 1;
+          stopwatch_fsm_state <= 0;
         end
-
-
-        // Test mode: We can only exit this state with a reset!
-        3:
+        2:
         if (test_ticks > 0) begin
           test_ticks <= test_ticks - 1;
           cf[0] <= 1;
+          // Go back to the initial state after we are done testing.
+        end else begin
+          stopwatch_fsm_state <= 0;
         end
       endcase
   end
@@ -157,7 +178,7 @@ module stopwatch #(
 
         cf[i+1] <= 0;
 
-        if (resetn == 0 || clear_display) begin
+        if (resetn == 0 || clear_display || trigger_test) begin
           digits[i] <= 0;
           cf[i+1]   <= 0;
         end
@@ -189,5 +210,11 @@ module stopwatch #(
     else if (time_display[31:28] == 0) digit_enable = 8'b01111111;
     else digit_enable = 8'b11111111;
   end
+
+  // Enable only the points to separate h:m:s:ms
+  // 13.05.17.23
+  localparam DECIMAL_POINTS_TEMPLATE = 8'b01010100;
+  // Only enable the decimal points for the enabled digits.
+  assign dp_enable = DECIMAL_POINTS_TEMPLATE & digit_enable;
   //==========================================================================
 endmodule
