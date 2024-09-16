@@ -43,7 +43,11 @@ module stopwatch #(
   localparam STOPWATCH_RUNNING = 1;
   localparam STOPWATCH_TEST = 2;
   reg [3:0] stopwatch_mode;
+
+  // Signal to clear the display
   reg clear_display;
+
+  // Signal to start a test pattern run.
   reg trigger_test;
 
   //==========================================================================
@@ -92,6 +96,8 @@ module stopwatch #(
 
   //==========================================================================
 
+
+
   // The number of clock cycles we need to pass 10ms
   localparam CLOCK_CYCLES_PER_10MS = 1000000;  //(10  /* ms */ / 1000) * FREQ_HZ;
 
@@ -102,15 +108,20 @@ module stopwatch #(
   // This does not work, see: https://stackoverflow.com/a/23508742
   // localparam MAX_DIGIT_VALUE[7:0][7:0] = {9,9,6,9,6,9,9,9};
   localparam [31:0] MAX_DIGIT_VALUE = {4'd9, 4'd9, 4'd5, 4'd9, 4'd5, 4'd9, 4'd9, 4'd9};
+
+  // The increment locations of the individual digits.
   reg [3:0] digits[7:0];
 
+  // Stitch the digits together to get the final time display.
   assign time_display = {
     digits[7], digits[6], digits[5], digits[4], digits[3], digits[2], digits[1], digits[0]
   };
 
-  // "Carry flags" for the digits.
+  // "Carry flags" for the digits. These bits are set in case the digit "overflows"
+  // the max value defined by MAX_DIGIT_VALUE.
   reg [ 8:0] cf;
 
+  // State of the stopwatch timer fsm.
   reg [ 3:0] stopwatch_fsm_state;
 
   // Applies 'test_number´ number of ticks to the stop watch to have
@@ -155,6 +166,8 @@ module stopwatch #(
           cf[0] <= 1;
           stopwatch_fsm_state <= 0;
         end
+
+        // Just apply the number of ticks to test the counting mechanism.
         2:
         if (test_ticks > 0) begin
           test_ticks <= test_ticks - 1;
@@ -167,8 +180,9 @@ module stopwatch #(
   end
   //==========================================================================
 
+
   //==========================================================================
-  // Generate the state machines for the other digits
+  // Generate the state machines for counting the digits.
   //==========================================================================
   genvar i;
   generate
